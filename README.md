@@ -55,9 +55,9 @@ The system follows a microservices architecture with clean separation of concern
    docker-compose up -d
    ```
 
-3. Run database migrations:
+3. Run database setup:
    ```bash
-   go run cmd/migrations/main.go
+   go run cmd/migrate/main.go
    ```
 
 4. Start services:

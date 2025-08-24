@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"thamaniyah/internal/config"
 	"thamaniyah/pkg/database"
@@ -20,25 +19,17 @@ func main() {
 	}
 	defer conn.Close()
 
-	// Create migrator
-	migrator := database.NewMigrator(conn.DB, "./migrations")
-
-	// Check command line arguments
-	if len(os.Args) > 1 && os.Args[1] == "auto" {
-		// Run GORM auto-migration
-		fmt.Println("Running GORM auto-migration...")
-		if err := migrator.AutoMigrate(); err != nil {
-			log.Fatalf("Auto-migration failed: %v", err)
-		}
-		fmt.Println("Auto-migration completed successfully")
-		return
+	// Run simple auto-migration
+	fmt.Println("Running GORM auto-migration...")
+	if err := database.SimpleAutoMigrate(conn.DB); err != nil {
+		log.Fatalf("Auto-migration failed: %v", err)
 	}
 
-	// Run SQL migrations
-	fmt.Println("Running SQL migrations...")
-	if err := migrator.RunMigrations(); err != nil {
-		log.Fatalf("Migration failed: %v", err)
+	// Create additional indexes
+	fmt.Println("Creating additional indexes...")
+	if err := database.CreateIndexes(conn.DB); err != nil {
+		log.Fatalf("Index creation failed: %v", err)
 	}
-
-	fmt.Println("Database migration completed successfully!")
+	
+	fmt.Println("Database setup completed successfully!")
 }
