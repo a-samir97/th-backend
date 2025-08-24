@@ -16,6 +16,7 @@ import (
 	"thamaniyah/internal/repository"
 	"thamaniyah/internal/service"
 	"thamaniyah/pkg/database"
+	"thamaniyah/pkg/elasticsearch"
 	"thamaniyah/pkg/httpclient"
 
 	"github.com/gin-gonic/gin"
@@ -32,11 +33,18 @@ func main() {
 	}
 	defer conn.Close()
 
+	// Connect to Elasticsearch
+	esClient, err := elasticsearch.NewClient(cfg)
+	if err != nil {
+		log.Fatalf("Failed to connect to Elasticsearch: %v", err)
+	}
+	defer esClient.Close()
+
 	// Initialize HTTP client for CMS service communication
 	cmsClient := httpclient.NewClient(fmt.Sprintf("http://localhost:%d", cfg.Server.Port))
 
 	// Initialize repositories
-	searchRepo := repository.NewPostgresSearchRepository(conn)
+	searchRepo := repository.NewElasticsearchSearchRepository(esClient)
 
 	// Initialize services
 	searchService := service.NewSearchService(searchRepo, cmsClient)

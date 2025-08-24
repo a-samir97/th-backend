@@ -104,26 +104,49 @@ func (s *SearchServiceImpl) Suggest(ctx context.Context, req *domain.SuggestRequ
 
 // Reindex rebuilds the search index by fetching data from CMS service
 func (s *SearchServiceImpl) Reindex(ctx context.Context) error {
-	// Fetch all media from CMS service
-	mediaListResponse, err := s.cmsClient.Get(ctx, "/api/v1/media?limit=1000")
-	if err != nil {
-		return fmt.Errorf("failed to fetch media from CMS service: %w", err)
+	return s.reindexWithPagination(ctx)
+}
+
+// reindexWithPagination handles large datasets by paginating through CMS data
+func (s *SearchServiceImpl) reindexWithPagination(ctx context.Context) error {
+	const batchSize = 100
+	var offset int
+	var allMedia []*domain.Media
+
+	for {
+		// Fetch batch of media from CMS service
+		url := fmt.Sprintf("/api/v1/media?limit=%d&offset=%d", batchSize, offset)
+		mediaListResponse, err := s.cmsClient.Get(ctx, url)
+		if err != nil {
+			return fmt.Errorf("failed to fetch media from CMS service at offset %d: %w", offset, err)
+		}
+
+		// Parse response
+		var cmsResponse struct {
+			Items []*domain.Media `json:"items"`
+			Total int64           `json:"total"`
+		}
+
+		if err := json.Unmarshal(mediaListResponse, &cmsResponse); err != nil {
+			return fmt.Errorf("failed to parse CMS response: %w", err)
+		}
+
+		// Add to collection
+		allMedia = append(allMedia, cmsResponse.Items...)
+
+		// Check if we've fetched all data
+		if len(cmsResponse.Items) < batchSize {
+			break
+		}
+
+		offset += batchSize
+
+		// Prevent infinite loops
+		if offset > int(cmsResponse.Total) {
+			break
+		}
 	}
 
-	// Parse response
-	var cmsResponse struct {
-		Items []*domain.Media `json:"items"`
-		Total int64           `json:"total"`
-	}
-
-	if err := json.Unmarshal(mediaListResponse, &cmsResponse); err != nil {
-		return fmt.Errorf("failed to parse CMS response: %w", err)
-	}
-
-	// Reindex all media
-	if err := s.searchRepo.ReindexAll(ctx, cmsResponse.Items); err != nil {
-		return fmt.Errorf("failed to reindex: %w", err)
-	}
-
-	return nil
+	// Reindex all media in batches
+	return s.searchRepo.ReindexAll(ctx, allMedia)
 }
