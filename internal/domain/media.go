@@ -24,18 +24,23 @@ const (
 
 // Media represents a media file entity
 type Media struct {
-	ID          string      `json:"id" db:"id"`
-	Title       string      `json:"title" db:"title"`
-	Description string      `json:"description" db:"description"`
-	FilePath    string      `json:"file_path" db:"file_path"`
-	FileSize    int64       `json:"file_size" db:"file_size"`
-	Duration    int         `json:"duration" db:"duration"` // in seconds
-	Format      string      `json:"format" db:"format"`     // mp4, mp3, etc
-	Type        MediaType   `json:"type" db:"type"`
-	Status      MediaStatus `json:"status" db:"status"`
-	Tags        []string    `json:"tags" db:"tags"`
-	CreatedAt   time.Time   `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at" db:"updated_at"`
+	ID          string      `json:"id" gorm:"primaryKey"`
+	Title       string      `json:"title" gorm:"not null"`
+	Description string      `json:"description"`
+	FilePath    string      `json:"file_path"`
+	FileSize    int64       `json:"file_size"`
+	Duration    int         `json:"duration"` // in seconds
+	Format      string      `json:"format"`   // mp4, mp3, etc
+	Type        MediaType   `json:"type" gorm:"type:varchar(20)"`
+	Status      MediaStatus `json:"status" gorm:"type:varchar(20)"`
+	CreatedAt   time.Time   `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time   `json:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt   *time.Time  `json:"deleted_at,omitempty" gorm:"index"`
+}
+
+// TableName specifies the table name for Media
+func (Media) TableName() string {
+	return "media_files"
 }
 
 // IsValid checks if the media entity has valid required fields

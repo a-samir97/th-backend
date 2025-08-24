@@ -30,6 +30,6 @@ func main() {
 	if err := database.CreateIndexes(conn.DB); err != nil {
 		log.Fatalf("Index creation failed: %v", err)
 	}
-	
+
 	fmt.Println("Database setup completed successfully!")
 }

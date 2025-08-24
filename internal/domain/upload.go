@@ -18,7 +18,6 @@ type UploadRequest struct {
 	Filename    string    `json:"filename" binding:"required"`
 	FileSize    int64     `json:"file_size" binding:"required"`
 	Type        MediaType `json:"type" binding:"required"`
-	Tags        []string  `json:"tags"`
 }
 
 // IsValid validates the upload request
@@ -51,7 +50,6 @@ func (ur *UploadRequest) ToMedia(id, filePath string) *Media {
 		FileSize:    ur.FileSize,
 		Type:        ur.Type,
 		Status:      StatusUploading,
-		Tags:        ur.Tags,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -59,9 +57,8 @@ func (ur *UploadRequest) ToMedia(id, filePath string) *Media {
 
 // UpdateMediaRequest represents a request to update media metadata
 type UpdateMediaRequest struct {
-	Title       *string  `json:"title,omitempty"`
-	Description *string  `json:"description,omitempty"`
-	Tags        []string `json:"tags,omitempty"`
+	Title       *string `json:"title,omitempty"`
+	Description *string `json:"description,omitempty"`
 }
 
 // ApplyTo applies the update request to a media entity
@@ -71,9 +68,6 @@ func (umr *UpdateMediaRequest) ApplyTo(media *Media) {
 	}
 	if umr.Description != nil {
 		media.Description = *umr.Description
-	}
-	if umr.Tags != nil {
-		media.Tags = umr.Tags
 	}
 	media.UpdatedAt = time.Now()
 }
