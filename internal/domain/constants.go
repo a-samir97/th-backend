@@ -9,14 +9,14 @@ const (
 	// File size limits
 	MaxVideoFileSize   = 5 * 1024 * 1024 * 1024 // 5GB
 	MaxPodcastFileSize = 1 * 1024 * 1024 * 1024 // 1GB
-	
+
 	// Upload URL expiration
 	UploadURLTTL = 1 * time.Hour
-	
+
 	// Search limits
-	MaxSearchLimit   = 100
+	MaxSearchLimit     = 100
 	DefaultSearchLimit = 20
-	
+
 	// Pagination
 	DefaultPageSize = 20
 	MaxPageSize     = 100

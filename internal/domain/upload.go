@@ -26,18 +26,18 @@ func (ur *UploadRequest) IsValid() bool {
 	if ur.Title == "" || ur.Filename == "" || ur.FileSize <= 0 {
 		return false
 	}
-	
+
 	// Validate media type
 	if ur.Type != TypeVideo && ur.Type != TypePodcast {
 		return false
 	}
-	
+
 	// Basic file size validation (max 5GB)
 	maxFileSize := int64(5 * 1024 * 1024 * 1024) // 5GB
 	if ur.FileSize > maxFileSize {
 		return false
 	}
-	
+
 	return true
 }
 

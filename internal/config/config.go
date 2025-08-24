@@ -7,12 +7,12 @@ import (
 )
 
 type Config struct {
-	Server       ServerConfig
-	Database     DatabaseConfig
+	Server        ServerConfig
+	Database      DatabaseConfig
 	Elasticsearch ElasticsearchConfig
-	Redis        RedisConfig
-	Queue        QueueConfig
-	Storage      StorageConfig
+	Redis         RedisConfig
+	Queue         QueueConfig
+	Storage       StorageConfig
 }
 
 type ServerConfig struct {

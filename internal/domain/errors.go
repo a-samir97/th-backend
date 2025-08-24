@@ -33,7 +33,7 @@ func (e ValidationErrors) Error() string {
 	if len(e) == 0 {
 		return "validation errors"
 	}
-	
+
 	msg := "validation errors: "
 	for i, err := range e {
 		if i > 0 {

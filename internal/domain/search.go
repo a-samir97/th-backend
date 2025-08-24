@@ -34,7 +34,7 @@ func (sq *SearchQuery) IsValid() bool {
 	if sq.Offset < 0 {
 		sq.Offset = 0
 	}
-	
+
 	// Validate sort field
 	validSortFields := map[string]bool{
 		"title":      true,
@@ -42,11 +42,11 @@ func (sq *SearchQuery) IsValid() bool {
 		"duration":   true,
 		"file_size":  true,
 	}
-	
+
 	if !validSortFields[sq.SortBy] {
 		sq.SortBy = "created_at"
 	}
-	
+
 	return true
 }
 
@@ -113,34 +113,34 @@ type SearchFilters struct {
 // ParseFiltersFromQuery parses filters from query parameters
 func ParseFiltersFromQuery(params map[string]string) *SearchFilters {
 	filters := &SearchFilters{}
-	
+
 	if minDur := params["min_duration"]; minDur != "" {
 		if val, err := strconv.Atoi(minDur); err == nil {
 			filters.MinDuration = val
 		}
 	}
-	
+
 	if maxDur := params["max_duration"]; maxDur != "" {
 		if val, err := strconv.Atoi(maxDur); err == nil {
 			filters.MaxDuration = val
 		}
 	}
-	
+
 	if minSize := params["min_file_size"]; minSize != "" {
 		if val, err := strconv.ParseInt(minSize, 10, 64); err == nil {
 			filters.MinFileSize = val
 		}
 	}
-	
+
 	if maxSize := params["max_file_size"]; maxSize != "" {
 		if val, err := strconv.ParseInt(maxSize, 10, 64); err == nil {
 			filters.MaxFileSize = val
 		}
 	}
-	
+
 	if format := params["format"]; format != "" {
 		filters.Format = strings.ToLower(format)
 	}
-	
+
 	return filters
 }
