@@ -44,7 +44,6 @@ func main() {
 		Format:      "mp4",
 		Type:        domain.TypeVideo,
 		Status:      domain.StatusUploading,
-		Tags:        []string{"test", "demo"},
 	}
 
 	ctx := context.Background()
